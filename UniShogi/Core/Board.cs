@@ -1,14 +1,40 @@
+/*
+ * Copyright (c) 2022 tomori-k
+ */
+
 using System.Text;
 
 namespace UniShogi
 {
 	public class Board
 	{
+		public Color Player { get; set; }
 		public Piece[] Squares { get; } = new Piece[81];
+		public CaptureList[] CaptureLists { get; } = new CaptureList[2];
 		
 		public Board()
 		{
 			
+		}
+
+		public Board(Board board)
+		{
+			Squares = (Piece[])board.Squares.Clone();
+		}
+		
+		/// <summary>
+		/// c の駒台
+		/// </summary>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		public ref CaptureList CaptureListOf(Color c)
+		{
+			return ref CaptureLists[(int)c];
+		}
+
+		public Board Clone()
+		{
+			return new Board(this);
 		}
 		
 		public string Pretty()
