@@ -52,5 +52,103 @@ namespace UniShogi
                 return false;
             }
         }
+        
+        /// <summary>
+        /// マス sq を USI 形式の文字列に変換
+        /// </summary>
+        /// <param name="sq"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static string ToSquare(int sq)
+        {
+            if (!(0 <= sq && sq < 81))
+            {
+                throw new ArgumentException($"マス番号が範囲外です：{sq}");
+            }
+            var rank = Square.RankOf(sq);
+            var file = Square.FileOf(sq);
+            return $"{file + 1}{(char)('a' + rank)}";
+        }
+
+        /// <summary>
+        /// USI 形式の指し手文字列を Move に変換
+        /// </summary>
+        /// <param name="usiMove"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
+        public static Move ParseMove(string usiMove)
+            => TryParseMove(usiMove, out var m) ? m : throw new FormatException($"USI 形式ではありません：{usiMove}");
+
+        /// <summary>
+        /// USI 形式の指し手文字列を Move に変換
+        /// </summary>
+        /// <param name="usiMove"></param>
+        public static bool TryParseMove(string usiMove, out Move result)
+        {
+            if (usiMove == "resign" || usiMove == "win")
+            {
+                result = usiMove.StartsWith('r') ? Move.Resign : Move.Win;
+                return true;
+            }
+
+            if (usiMove.Length < 4
+                || !TryParseSquare(usiMove[2..4], out var to))
+            {
+                result = Move.None;
+                return false;
+            }
+
+            // 駒打ち
+            if (usiMove[1] == '*')
+            {
+                if (!TryParsePiece(usiMove[0], out var dropped)
+                    || dropped.Color() != Color.Black)
+                {
+                    result = Move.None;
+                    return false;
+                }
+                result = MoveExtensions.MakeDrop(dropped, to);
+            }
+            // 駒移動
+            else
+            {
+                if (!TryParseSquare(usiMove[0..2], out var from))
+                {
+                    result = Move.None;
+                    return false;
+                }
+                var promote = usiMove.Length >= 5 && usiMove[4] == '+';
+                result = MoveExtensions.MakeMove(from, to, promote);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// USI 形式のの座標指定文字列をマス番号に変換
+        /// </summary>
+        /// <param name="usiSq"></param>
+        /// <exception cref="FormatException"></exception>
+        private static int ParseSquare(string usiSq)
+            => TryParseSquare(usiSq, out var sq) ? sq : throw new FormatException($"USI 形式ではありません：{usiSq}");
+
+        /// <summary>
+        /// USI 形式のの座標指定文字列をマス番号に変換
+        /// </summary>
+        /// <param name="usiSq"></param>
+        private static bool TryParseSquare(string usiSq, out int sq)
+        {
+            if (usiSq.Length < 2
+                || !('1' <= usiSq[0] && usiSq[0] <= '9')
+                || !('a' <= usiSq[1] && usiSq[1] <= 'i'))
+            {
+                sq = 0;
+                return false;
+            }
+            var file = usiSq[0] - '1';
+            var rank = usiSq[1] - 'a';
+            sq = Square.Index(rank, file);
+            return true;
+        }
     }
 }
