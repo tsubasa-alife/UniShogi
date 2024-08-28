@@ -1,6 +1,6 @@
 namespace UniShogi
 {
-	public class Bitboard
+	public struct Bitboard
 	{
 	
 	}
