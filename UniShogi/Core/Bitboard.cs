@@ -44,21 +44,21 @@ namespace UniShogi
 
         #endregion
 
-        readonly UInt128 x;
+        readonly UInt128 _x;
 
         public Bitboard(UInt64 lo, UInt64 hi)
         {
-            this.x = new UInt128(lo, hi);
+            this._x = new UInt128(lo, hi);
         }
 
         public Bitboard(UInt128 x)
         {
-            this.x = x;
+            this._x = x;
         }
 
         public Bitboard(string bitPattern)
         {
-            this.x = new UInt128(0UL, 0UL);
+            this._x = new UInt128(0UL, 0UL);
             foreach (var (c, i)
                 in bitPattern.Select((x, i) => (x, i)))
             {
@@ -141,7 +141,7 @@ namespace UniShogi
         
         public UInt64 Lower()
         {
-            return this.x.ToScalar();
+            return this._x.ToScalar();
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace UniShogi
         
         public UInt64 Upper()
         {
-            return this.x.GetUpper().ToScalar();
+            return this._x.GetUpper().ToScalar();
         }
 
         /// <summary>
@@ -697,12 +697,12 @@ namespace UniShogi
 
             for (int i = 0; i < 81; ++i)
             {
-                var up = Ray(i, Direction.Up).x;
-                var down = Ray(i, Direction.Down).x;
-                var rightup = Ray(i, Direction.RightUp).x;
-                var leftup = Ray(i, Direction.LeftUp).x;
-                var rightdown = Ray(i, Direction.RightDown).x;
-                var leftdown = Ray(i, Direction.LeftDown).x;
+                var up = Ray(i, Direction.Up)._x;
+                var down = Ray(i, Direction.Down)._x;
+                var rightup = Ray(i, Direction.RightUp)._x;
+                var leftup = Ray(i, Direction.LeftUp)._x;
+                var rightdown = Ray(i, Direction.RightDown)._x;
+                var leftdown = Ray(i, Direction.LeftDown)._x;
 
                 // 予めバイト反転しておく
                 rightdown = Bswap128_NoSse(rightdown);
