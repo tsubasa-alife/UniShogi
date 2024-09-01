@@ -46,7 +46,7 @@ namespace UniShogi
 
         public Bitboard(UInt64 lo, UInt64 hi)
         {
-            this._x = new UInt128(lo, hi);
+            this._x = new UInt128(hi, lo);
         }
 
         public Bitboard(UInt128 x)
