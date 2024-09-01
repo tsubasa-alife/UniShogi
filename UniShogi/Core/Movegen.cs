@@ -6,14 +6,16 @@ namespace UniShogi
 {
 	public static class Movegen
     {
+        private static int currentIdx = 0;
         /// <summary>
         /// 合法手を生成する。
         /// </summary>
         public static MoveList GenerateMoves(Position pos)
         {
+            currentIdx = 0;
             var moves = new Move[BufferSize];
             var end = GenerateMoves(moves, pos);
-            return new MoveList(moves, (int)(end - start));
+            return new MoveList(moves, currentIdx + 1);
         }
 
         /// <summary>
@@ -31,8 +33,6 @@ namespace UniShogi
             var occupancy = pos.GetOccupancy();
             var us = pos.ColorBB(pos.Player);
             var pinned = pos.PinnedBy(pos.Player.Opponent()) & us;
-            
-            int i = 0;
 
             // 歩
             {
@@ -48,18 +48,14 @@ namespace UniShogi
                     switch (rank)
                     {
                         case 0:
-                            moves[i] = MoveExtensions.MakeMove(from, to, true);
-                            i++;
+                            moves[currentIdx++] = MoveExtensions.MakeMove(from, to, true);
                             break;
                         case 1: case 2:
-                            moves[i] = MoveExtensions.MakeMove(from, to, false);
-                            i++;
-                            moves[i] = MoveExtensions.MakeMove(from, to, true);
-                            i++;
+                            moves[currentIdx++] = MoveExtensions.MakeMove(from, to, false);
+                            moves[currentIdx++] = MoveExtensions.MakeMove(from, to, true);
                             break;
                         default:
-                            moves[i] = MoveExtensions.MakeMove(from, to, false);
-                            i++;
+                            moves[currentIdx++] = MoveExtensions.MakeMove(from, to, false);
                             break;
                     }
                 }
@@ -79,18 +75,14 @@ namespace UniShogi
                         switch (rank)
                         {
                             case 0:
-                            moves[i] = MoveExtensions.MakeMove(from, to, true);
-                            i++;
+                            moves[currentIdx++] = MoveExtensions.MakeMove(from, to, true);
                             break;
                         case 1: case 2:
-                            moves[i] = MoveExtensions.MakeMove(from, to, false);
-                            i++;
-                            moves[i] = MoveExtensions.MakeMove(from, to, true);
-                            i++;
+                            moves[currentIdx++] = MoveExtensions.MakeMove(from, to, false);
+                            moves[currentIdx++] = MoveExtensions.MakeMove(from, to, true);
                             break;
                         default:
-                            moves[i] = MoveExtensions.MakeMove(from, to, false);
-                            i++;
+                            moves[currentIdx++] = MoveExtensions.MakeMove(from, to, false);
                             break;
                         }
                     }
@@ -111,18 +103,14 @@ namespace UniShogi
                         switch (rank)
                         {
                             case 0: case 1:
-                                moves[i] = MoveExtensions.MakeMove(from, to, true);
-                                i++;
+                                moves[currentIdx++] = MoveExtensions.MakeMove(from, to, true);
                                 break;
                             case 2:
-                                moves[i] = MoveExtensions.MakeMove(from, to, false);
-                                i++;
-                                moves[i] = MoveExtensions.MakeMove(from, to, true);
-                                i++;
+                                moves[currentIdx++] = MoveExtensions.MakeMove(from, to, false);
+                                moves[currentIdx++] = MoveExtensions.MakeMove(from, to, true);
                                 break;
                             default:
-                                moves[i] = MoveExtensions.MakeMove(from, to, false);
-                                i++;
+                                moves[currentIdx++] = MoveExtensions.MakeMove(from, to, false);
                                 break;
                         }
                     }
@@ -142,10 +130,10 @@ namespace UniShogi
                         .AndNot(us);
                     foreach (var to in toBB)
                     {
-                        moves[i++] = MoveExtensions.MakeMove(from, to, false);
+                        moves[currentIdx++] = MoveExtensions.MakeMove(from, to, false);
                         if (Square.CanPromote(pos.Player, from, to))
                         {
-                            moves[i++] = MoveExtensions.MakeMove(from, to, true);
+                            moves[currentIdx++] = MoveExtensions.MakeMove(from, to, true);
                         }
                     }
                 }
@@ -160,7 +148,7 @@ namespace UniShogi
                     if (pos.EnumerateAttackers(
                         pos.Player.Opponent(), to).None())
                     {
-                        moves[i++] = MoveExtensions.MakeMove(from, to);
+                        moves[currentIdx++] = MoveExtensions.MakeMove(from, to);
                     }
                 }
             }
@@ -176,7 +164,7 @@ namespace UniShogi
                         .AndNot(us);
                     foreach (var to in toBB)
                     {
-                        moves[i++] = MoveExtensions.MakeMove(from, to);
+                        moves[currentIdx++] = MoveExtensions.MakeMove(from, to);
                     }
                 }
             }
@@ -209,8 +197,7 @@ namespace UniShogi
             var evasionTo = Bitboard.KingAttacks(ksq)
                 .AndNot(pos.ColorBB(pos.Player));
             var occ = pos.GetOccupancy() ^ ksq;
-
-            int i = 0;
+            
             foreach (var to in evasionTo)
             {
                 var canMove = pos.EnumerateAttackers(
@@ -218,8 +205,7 @@ namespace UniShogi
                     .None();
                 if (canMove)
                 {
-                    moves[i] = MoveExtensions.MakeMove(ksq, to);
-                    i++;
+                    moves[currentIdx++] = MoveExtensions.MakeMove(ksq, to);
                 }
             }
 
@@ -268,7 +254,7 @@ namespace UniShogi
                 }
                 foreach (var to in toBB)
                 {
-                    moves[i++] = MoveExtensions.MakeDrop(Piece.Pawn, to);
+                    moves[currentIdx++] = MoveExtensions.MakeDrop(Piece.Pawn, to);
                 }
             }
 
@@ -308,48 +294,33 @@ namespace UniShogi
             var to2 = target & Rank2BB[(int)pos.Player];
             var rem = target & Rank39BB[(int)pos.Player];
             
-            
+            for (int i = 0; i < n; ++i)
             {
-                // sizeof(nuint) == 4(32bit) or 8(64bit) のみ考える
-                //Debug.Assert(sizeof(nuint) == 4 || sizeof(nuint) == 8);
-
-                if (n - other != 0)
+                var p = tmpl[i].Dropped();
+                var toBB = Bitboard.ReachableMask(pos.Player, p) & rem;
+                foreach (var to in toBB)
                 {
-                    var tmpl_p = tmpl[other];
-                    foreach (var to in to1)
-                    {
-                        var multiTo = unchecked((nuint)0x0001000100010001UL) * (nuint)to;
-                        var p = moves;
-                        p[0] = tmpl_p + multiTo;
-                        if (sizeof(nuint) == 4) p[1] = tmpl_p * multiTo;
-                        moves = moves.Skip(n - other).ToArray();
-                    }
+                    moves[currentIdx++] = MoveExtensions.MakeDrop(p, to);
                 }
-                if (n - li != 0)
+            }
+            
+            for (int i = 0; i < li; ++i)
+            {
+                var p = tmpl[i].Dropped();
+                var toBB = Bitboard.ReachableMask(pos.Player, p) & to1;
+                foreach (var to in toBB)
                 {
-                    var tmpl_p = tmpl[li];
-                    foreach (var to in to2)
-                    {
-                        var multiTo = unchecked((nuint)0x0001000100010001UL) * (nuint)to;
-                        var p = moves;
-                        p[0] = tmpl_p + multiTo;
-                        p[1] = tmpl_p + multiTo;
-                        if (sizeof(nuint) == 4) p[2] = tmpl_p * multiTo;
-                        moves = moves.Skip(n - li).ToArray();
-                    }
+                    moves[currentIdx++] = MoveExtensions.MakeDrop(p, to);
                 }
-                // n != 0
+            }
+            
+            for (int i = li; i < other; ++i)
+            {
+                var p = tmpl[i].Dropped();
+                var toBB = Bitboard.ReachableMask(pos.Player, p) & to2;
+                foreach (var to in toBB)
                 {
-                    var tmpl_p = tmpl[0];
-                    foreach (var to in rem)
-                    {
-                        var multiTo = unchecked((nuint)0x0001000100010001UL) * (nuint)to;
-                        var p = moves;
-                        p[0] = tmpl_p + multiTo;
-                        p[1] = tmpl_p + multiTo;
-                        if (sizeof(nuint) == 4) p[2] = tmpl_p * multiTo;
-                        moves = moves.Skip(n).ToArray();
-                    }
+                    moves[currentIdx++] = MoveExtensions.MakeDrop(p, to);
                 }
             }
 
@@ -360,24 +331,20 @@ namespace UniShogi
         {
             var c = p.Color();
             p = p.Colorless();
-            int i = 0;
 
             if ((Square.RankOf(c, to) <= 1 && p == Piece.Knight)
                 || (Square.RankOf(c, to) == 0 && (p == Piece.Pawn || p == Piece.Lance)))
             {
-                moves[i] = MoveExtensions.MakeMove(from, to, true);
-                i++;
+                moves[currentIdx++] = MoveExtensions.MakeMove(from, to, true);
             }
             else
             {
-                moves[i] = MoveExtensions.MakeMove(from, to, false);
-                i++;
+                moves[currentIdx++] = MoveExtensions.MakeMove(from, to, false);
 
                 if (Square.CanPromote(c, from, to)
                     && !(p.IsPromoted() || p == Piece.Gold || p == Piece.King))
                 {
-                    moves[i] = MoveExtensions.MakeMove(from, to, true);
-                    i++;
+                    moves[currentIdx++] = MoveExtensions.MakeMove(from, to, true);
                 }
             }
 
