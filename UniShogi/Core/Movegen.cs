@@ -37,9 +37,7 @@ namespace UniShogi
             // 歩
             {
                 var fromBB = pos.PieceBB(pos.Player, Piece.Pawn).AndNot(pinned);
-                var toBB = (pos.Player == Color.Black
-                    ? fromBB >> 1 : fromBB << 1)
-                    .AndNot(us);
+                var toBB = (pos.Player == Color.Black ? fromBB >> 1 : fromBB << 1).AndNot(us);
                 var delta = pos.Player == Color.Black ? 1 : -1;
                 foreach (var to in toBB)
                 {

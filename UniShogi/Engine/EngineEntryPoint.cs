@@ -25,6 +25,7 @@ namespace UniShogi
 
 			_logger.Log(pos.Sfen()); // lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
 
+			_logger.Log(pos.Pretty());
 			pos.DoMove(Usi.ParseMove("2g2f"));
 
 			_logger.Log((pos.Player == Color.White).ToString()); // true
