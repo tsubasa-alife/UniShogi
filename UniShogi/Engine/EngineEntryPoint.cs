@@ -16,6 +16,27 @@ namespace UniShogi
 		public void Initialize(ILogger logger)
 		{
 			_logger = logger;
+			Setup();
+		}
+
+		private void Setup()
+		{
+			var pos = new Position("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"); // 平手
+
+			_logger.Log(pos.Sfen()); // lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+
+			pos.DoMove(Usi.ParseMove("2g2f"));
+
+			_logger.Log((pos.Player == Color.White).ToString()); // true
+
+			pos.UndoMove();
+
+			foreach (var m in Movegen.GenerateMoves(pos))
+			{
+				_logger.Log(m.ToUsi());
+			}
+			
+			_logger.Log("Completed.");
 		}
 
 		public void ReceiveUsiCommand(string command)

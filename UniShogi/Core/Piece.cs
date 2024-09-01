@@ -9,12 +9,12 @@ namespace UniShogi
 	/// </summary>
 	public enum Piece
 	{
-		Empty, Pawn, Lance, Knight,
+		Empty = 0, Pawn, Lance, Knight,
 		Silver, Gold, Bishop, Rook,
 		King, P_Pawn, P_Lance, P_Knight,
 		P_Silver, P_Gold, P_Bishop, P_Rook,
 		
-		B_Empty, B_Pawn, B_Lance, B_Knight,
+		B_Empty = 0, B_Pawn, B_Lance, B_Knight,
 		B_Silver, B_Gold, B_Bishop, B_Rook,
 		B_King, B_P_Pawn, B_P_Lance, B_P_Knight,
 		B_P_Silver, B_P_Gold, B_P_Bishop, B_P_Rook,

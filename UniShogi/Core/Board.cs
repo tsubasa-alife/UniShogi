@@ -94,9 +94,7 @@ namespace UniShogi
             // 先手、後手の玉が1枚ずつ存在
             foreach (Color c in Enum.GetValues(typeof(Color)))
             {
-                if (Squares
-                        .Where(x => x == Piece.King.Colored(c))
-                        .Count() != 1)
+                if (Squares.Where(x => x == Piece.King.Colored(c)).Count() != 1)
                 {
                     throw new FormatException($"{c}の玉が1枚でないです。");
                 }
