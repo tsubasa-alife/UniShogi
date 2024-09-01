@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2022 tomori-k
+ * This file is modified from the original file by Tsubasa Hizono
  */
 
 using System.Numerics;
@@ -38,9 +39,6 @@ namespace UniShogi
         static readonly Bitboard[] ROOK_PSEUDO_ATTACKS = new Bitboard[81];
 
         static readonly Bitboard[] RAY_BB = new Bitboard[81 * 8]; // LEFT, LEFTUP, UP, RIGHTUP, RIGHT, RIGHTDOWN, DOWN, LEFTDOWN
-
-        static readonly UInt128[] BishopMask = new UInt128[81 * 2];
-        static readonly UInt128[] RookMask = new UInt128[81 * 2];
 
         #endregion
 
@@ -141,7 +139,7 @@ namespace UniShogi
         
         public UInt64 Lower()
         {
-            return this._x.ToScalar();
+            return (UInt64)_x;
         }
 
         /// <summary>
@@ -151,7 +149,7 @@ namespace UniShogi
         
         public UInt64 Upper()
         {
-            return this._x.GetUpper().ToScalar();
+            return (UInt64)(_x >> 64);
         }
 
         /// <summary>
@@ -590,7 +588,7 @@ namespace UniShogi
 
         private static UInt128 Bswap128_NoSse(UInt128 x)
         {
-            return new(Bswap64(x.GetUpper().ToScalar()), Bswap64(x.GetLower().ToScalar()));
+            return new(Bswap64((UInt64)(x >> 64)), Bswap64((UInt64)x));
         }
 
         /// <summary>
@@ -693,26 +691,6 @@ namespace UniShogi
                       : p == Piece.Knight                   ? Rank(c, 2, 8)
                       :                                       Rank(c, 0, 8);
                 }
-            }
-
-            for (int i = 0; i < 81; ++i)
-            {
-                var up = Ray(i, Direction.Up)._x;
-                var down = Ray(i, Direction.Down)._x;
-                var rightup = Ray(i, Direction.RightUp)._x;
-                var leftup = Ray(i, Direction.LeftUp)._x;
-                var rightdown = Ray(i, Direction.RightDown)._x;
-                var leftdown = Ray(i, Direction.LeftDown)._x;
-
-                // 予めバイト反転しておく
-                rightdown = Bswap128_NoSse(rightdown);
-                leftdown = Bswap128_NoSse(leftdown);
-                down = Bswap128_NoSse(down);
-
-                BishopMask[i * 2 + 0] = Vector256.Create(rightup.GetLower().ToScalar(), leftdown.GetLower().ToScalar(), leftup.GetLower().ToScalar(), rightdown.GetLower().ToScalar());
-                BishopMask[i * 2 + 1] = Vector256.Create(rightup.GetUpper().ToScalar(), leftdown.GetUpper().ToScalar(), leftup.GetUpper().ToScalar(), rightdown.GetUpper().ToScalar());
-                RookMask[i * 2 + 0] = Vector128.Create(up.GetLower().ToScalar(), down.GetLower().ToScalar());
-                RookMask[i * 2 + 1] = Vector128.Create(up.GetUpper().ToScalar(), down.GetUpper().ToScalar());
             }
 
             for (int i = 0; i < 81; ++i)

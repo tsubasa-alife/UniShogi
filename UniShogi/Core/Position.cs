@@ -682,7 +682,7 @@ namespace UniShogi
         /// <returns></returns>
         public string SfenWithMoves()
         {
-            return $"sfen {initPos} moves {string.Join(' ', moves.Reverse().Select(x => x.Move.Usi()))}";
+            return $"sfen {initPos} moves {string.Join(' ', moves.Reverse().Select(x => x.Move.ToUsi()))}";
         }
 
         /// <summary>
