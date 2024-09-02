@@ -2,7 +2,7 @@ using UniShogi;
 
 public class ConsoleLog : ILogger
 {
-	public void Log(string message)
+	public void Log(object message)
 	{
 		Console.WriteLine(message);
 	}
