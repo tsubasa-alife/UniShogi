@@ -19,6 +19,31 @@ namespace UniShogi
 			_logger = logger;
 		}
 
+		private void Usi()
+		{
+			
+		}
+		
+		private void UsiNewGame()
+		{
+			
+		}
+		
+		private void Position()
+		{
+			
+		}
+		
+		private void Go()
+		{
+			
+		}
+		
+		private void Quit()
+		{
+			
+		}
+
 		public void ReceiveUsiCommand(string command)
 		{
 			switch (command)
