@@ -1,7 +1,7 @@
 ﻿using UniShogi;
 
 var logger = new ConsoleLog();
-var engine = new EngineEntryPoint();
+var engine = new BaseEngine();
 
 var pos = new Position("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"); // 平手
 
@@ -46,6 +46,6 @@ while ((commandLine = Console.ReadLine()) != null)
 
 	var command = split[0];
 	
-	engine.ReceiveUsiCommand(command);
+	engine.ProcessUsiCommand(command);
 }
 
