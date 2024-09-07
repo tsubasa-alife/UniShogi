@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+
 namespace UniShogi
 {
 	/// <summary>
@@ -5,38 +7,44 @@ namespace UniShogi
 	/// </summary>
 	public class SimpleEngine : BaseEngine
 	{
-		protected override void Usi()
+		protected override UniTask<string> Usi()
 		{
 			_logger.Log("id name UniShogi");
 			_logger.Log("id author Tsubasa Hizono");
+			return UniTask.FromResult("usiok");
 		}
 
-		protected override void IsReady()
+		protected override UniTask<string> IsReady()
 		{
-			
+			return UniTask.FromResult("readyok");
 		}
 
-		protected override void UsiNewGame()
+		protected override UniTask<string> UsiNewGame()
 		{
-			
+			return UniTask.FromResult("usinewgame");
 		}
 
-		protected override void Position()
+		/// <summary>
+		/// 局面を受け取る
+		/// </summary>
+		protected override UniTask<string> Position()
 		{
-			
+			return UniTask.FromResult("position");
 		}
 
-		protected override void Go()
+		protected override UniTask<string> Go()
 		{
-			
+			return UniTask.FromResult("go");
 		}
 
-		protected override void Stop()
+		protected override UniTask<string> Stop()
 		{
+			return UniTask.FromResult("stop");
 		}
 
-		protected override void Quit()
+		protected override UniTask<string> Quit()
 		{
+			return UniTask.FromResult("quit");
 		}
 	}
 }

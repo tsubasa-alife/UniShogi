@@ -1,7 +1,10 @@
+using System.Text;
+using Cysharp.Threading.Tasks;
+
 namespace UniShogi
 {
 	/// <summary>
-	/// 将棋エンジンの起点となるクラス
+	/// USIプロトコルによる将棋エンジン用クラス
 	/// </summary>
 	public class BaseEngine
 	{
@@ -13,55 +16,68 @@ namespace UniShogi
 			_logger = logger;
 		}
 
-		protected virtual void Usi(){}
-
-		protected virtual void IsReady(){}
-
-		protected virtual void UsiNewGame(){}
-
-		protected virtual void SetOption(){}
-		
-		protected virtual void Position(){}
-
-		protected virtual void Go(){}
-
-		protected virtual void Stop(){}
-
-		protected virtual void Quit(){}
-
-		public void ProcessUsiCommand(string command)
+		protected virtual UniTask<string> Usi()
 		{
-			switch (command)
+			return UniTask.FromResult(string.Empty);
+		}
+
+		protected virtual UniTask<string> IsReady()
+		{
+			return UniTask.FromResult(string.Empty);
+		}
+
+		protected virtual UniTask<string> UsiNewGame()
+		{
+			return UniTask.FromResult(string.Empty);
+		}
+
+		protected virtual UniTask<string> SetOption()
+		{
+			return UniTask.FromResult(string.Empty);
+		}
+
+		protected virtual UniTask<string> Position()
+		{
+			return UniTask.FromResult(string.Empty);
+		}
+
+		protected virtual UniTask<string> Go()
+		{
+			return UniTask.FromResult(string.Empty);
+		}
+
+		protected virtual UniTask<string> Stop()
+		{
+			return UniTask.FromResult(string.Empty);
+		}
+
+		protected virtual UniTask<string> Quit()
+		{
+			return UniTask.FromResult(string.Empty);
+		}
+
+		public async UniTask<string> ProcessUsiCommand(string[] command)
+		{
+			switch (command[0])
 			{
 				case "usi":
-					Usi();
-					_logger.Log("usiok");
-					break;
+					return await Usi();
 				case "setoption":
-					SetOption();
-					break;
+					return await SetOption();
 				case "isready":
-					IsReady();
-					_logger.Log("readyok");
-					break;
+					return await IsReady();
 				case "usinewgame":
-					UsiNewGame();
-					break;
+					return await UsiNewGame();
 				case "position":
-					Position();
-					break;
+					return await Position();
 				case "go":
-					Go();
-					break;
+					return await Go();
 				case "stop":
-					Stop();
-					break;
+					return await Stop();
 				case "quit":
-					Quit();
-					break;
+					return await Quit();
 				default:
-					_logger.Log($"info string Unsupported command: command={command}");
-					break;
+					return $"info string Unsupported command: command={command}";
 			}
 		}
 		
