@@ -10,10 +10,13 @@ namespace UniShogi
 	{
 		protected ILogger _logger;
 		protected Position _position;
+		protected Random _random;
 		
 		public void Initialize(ILogger logger)
 		{
 			_logger = logger;
+			_position = new Position();
+			_random = new Random();
 		}
 
 		protected virtual UniTask<string> Usi()
@@ -36,7 +39,7 @@ namespace UniShogi
 			return UniTask.FromResult(string.Empty);
 		}
 
-		protected virtual UniTask<string> Position()
+		protected virtual UniTask<string> Position(string[] command)
 		{
 			return UniTask.FromResult(string.Empty);
 		}
@@ -69,7 +72,7 @@ namespace UniShogi
 				case "usinewgame":
 					return await UsiNewGame();
 				case "position":
-					return await Position();
+					return await Position(command);
 				case "go":
 					return await Go();
 				case "stop":

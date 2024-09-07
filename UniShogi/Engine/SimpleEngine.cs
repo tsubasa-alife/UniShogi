@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 
 namespace UniShogi
 {
@@ -27,14 +28,18 @@ namespace UniShogi
 		/// <summary>
 		/// 局面を受け取る
 		/// </summary>
-		protected override UniTask<string> Position()
+		protected override UniTask<string> Position(string[] command)
 		{
-			return UniTask.FromResult("position");
+			_position.Set(command[1]);
+			return UniTask.FromResult(string.Empty);
 		}
 
 		protected override UniTask<string> Go()
 		{
-			return UniTask.FromResult("go");
+			// 局面から合法手を一つ選びそれを返す
+			var moves = Movegen.GenerateMoves(_position);
+			var move = moves[_random.Next(moves.Count)];
+			return UniTask.FromResult($"bestmove {move.ToUsi()}");
 		}
 
 		protected override UniTask<string> Stop()
