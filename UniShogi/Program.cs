@@ -1,8 +1,9 @@
 ﻿using UniShogi;
 
-
-
 var logger = new ConsoleLog();
+
+logger.Log($"Current Directory: {Environment.CurrentDirectory}");
+
 var writer = new StringWriter();
 var engine = new SimpleEngine();
 var mode = Mode.Engine;
@@ -65,13 +66,17 @@ while ((commandLine = Console.ReadLine()) != null)
 			continue;
 		}
 		
+		logger.Log(MovePrettier.Pretty(move, pos, false));
+		
 		pos.DoMove(move);
 		logger.Log(pos.Pretty());
 		await engine.ProcessUsiCommand(new string[] { "position", pos.Sfen() });
 		var result = await engine.ProcessUsiCommand(new string[] { "go" });
 		logger.Log(result);
 		var results = result.Split();
-		pos.DoMove(Usi.ParseMove(results[1]));
+		var bestMove = Usi.ParseMove(results[1]);
+		logger.Log(MovePrettier.Pretty(bestMove, pos, false));
+		pos.DoMove(bestMove);
 		logger.Log(pos.Pretty());
 	}
 
