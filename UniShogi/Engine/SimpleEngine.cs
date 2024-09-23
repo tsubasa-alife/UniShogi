@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using Microsoft.ML.OnnxRuntime;
 
 namespace UniShogi
 {
@@ -8,6 +7,7 @@ namespace UniShogi
 	/// </summary>
 	public class SimpleEngine : BaseEngine
 	{
+		
 		protected override UniTask<string> Usi()
 		{
 			_logger.Log("id name UniShogi");
@@ -17,8 +17,6 @@ namespace UniShogi
 
 		protected override UniTask<string> IsReady()
 		{
-			var inferenceSettion = new InferenceSession("../../../Models/model.onnx");
-			_logger.Log("onnx model loaded");
 			return UniTask.FromResult("readyok");
 		}
 
